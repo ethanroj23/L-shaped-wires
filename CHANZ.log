@@ -1,0 +1,171 @@
+This document contains a description of each time CHANX / CHANY is used within VTR and why.
+The purpose of looking into this is to consider the possibility of storing only CHANZ
+nodes instead of CHANX / CHANY nodes. CHANZ can span both x and y
+
+
+TODO
+- Go through VTR and mark all the reasons CHANX and CHANY are used
+- Determine size of XC7 devices if they could use CHANZ wires
+
+
+Reasons CHANX / CHANY are used
+1.  set cost_index accordingly # MAYBE UNIQUE
+2.  check if it's a wire  # BOTH
+3.  iterate over every tile of a wire
+4.  load_channel_occupancies # MAYBE UNIQUE (VTR determines how many wires are occupying each channel xy location
+5.  draw nodes (CHANY is different color than CHANX)
+6.  determine where to draw mux
+7.  Draw an SBOX connection between an x-directed channel and a y-directed channel
+8.  Placement cost in certain axis (chanx_place_cost_fac, chany_place_cost_fac)
+9.  CHANY used only /* Find Max Fanout of Routing Buffer	 */
+10. CHAN type is determined based on which side the CHAN is of a tile (LEFT, RIGHT, TOP, BOTTOM)
+11. Determine routing usage and availability of CHANX / CHANY
+12. Check adjacent nodes
+13. Lookup node
+14. Build RRGraph
+15. Record number of used resources in each x/y channel
+
+
+
+Some examples of CHANZ in xc7a50t_test
+
+~~~~~~~~~~~~~~~~~~~~~
+Edges
+<edge sink_node="349918" src_node="342266" switch_id="5"></edge>
+<edge sink_node="342266" src_node="349918" switch_id="5"></edge>
+
+Nodes
+<node capacity="1" direction="BI_DIR" id="349918" type="CHANY"><loc ptc="266" xhigh="32" xlow="32" yhigh="40" ylow="36"/>
+<node capacity="1" direction="BI_DIR" id="342266" type="CHANX"><loc ptc="127" xhigh="33" xlow="27" yhigh="36" ylow="36"/>
+~~~~~~~~~~~~~~~~~~~~
+Edges
+<edge sink_node="342074" src_node="342075" switch_id="5"></edge>
+<edge sink_node="342075" src_node="342074" switch_id="5"></edge>
+
+Nodes
+<node capacity="1" direction="BI_DIR" id="342074" type="CHANY"><loc ptc="248" xhigh="26" xlow="26" yhigh="40" ylow="36"/>
+<node capacity="1" direction="BI_DIR" id="342075" type="CHANX"><loc ptc="86" xhigh="32" xlow="26" yhigh="36" ylow="36"/>
+
+
+Stats of non-configurable switches for xc7a50t_test
+
+Count(non-configurable edges): 491372
+Count(all edges): 22357697
+Count(nodes): 2934684
+% nodes that have CHANZ edge: 16.74
+Count(nodes that are CHANY): 1638825
+Count(nodes that are CHANX): 408759
+
+
+
+
+
+Nodes with non-configurable switches
+<edge sink_node="342074" src_node="342075" switch_id="5"></edge>
+<edge sink_node="342077" src_node="342076" switch_id="5"></edge>
+<edge sink_node="342076" src_node="342077" switch_id="5"></edge>
+<edge sink_node="342079" src_node="342078" switch_id="5"></edge>
+<edge sink_node="342078" src_node="342079" switch_id="5"></edge>
+<edge sink_node="337163" src_node="342083" switch_id="5"></edge>
+<edge sink_node="336115" src_node="342084" switch_id="5"></edge>
+<edge sink_node="336116" src_node="342085" switch_id="5"></edge>
+<edge sink_node="336117" src_node="342086" switch_id="5"></edge>
+<edge sink_node="336118" src_node="342087" switch_id="5"></edge>
+<edge sink_node="336131" src_node="342088" switch_id="5"></edge>
+<edge sink_node="336132" src_node="342089" switch_id="5"></edge>
+<edge sink_node="336133" src_node="342090" switch_id="5"></edge>
+<edge sink_node="336362" src_node="342091" switch_id="5"></edge>
+<edge sink_node="347313" src_node="342221" switch_id="5"></edge>
+<edge sink_node="347314" src_node="342222" switch_id="5"></edge>
+<edge sink_node="347315" src_node="342223" switch_id="5"></edge>
+<edge sink_node="347316" src_node="342224" switch_id="5"></edge>
+<edge sink_node="347317" src_node="342233" switch_id="5"></edge>
+<edge sink_node="347318" src_node="342234" switch_id="5"></edge>
+<edge sink_node="347319" src_node="342235" switch_id="5"></edge>
+<edge sink_node="347320" src_node="342236" switch_id="5"></edge>
+<edge sink_node="336913" src_node="342246" switch_id="5"></edge>
+<edge sink_node="344876" src_node="342250" switch_id="5"></edge>
+<edge sink_node="347130" src_node="342255" switch_id="5"></edge>
+<edge sink_node="347131" src_node="342256" switch_id="5"></edge>
+<edge sink_node="347132" src_node="342257" switch_id="5"></edge>
+<edge sink_node="347133" src_node="342258" switch_id="5"></edge>
+<edge sink_node="349915" src_node="342263" switch_id="5"></edge>
+<edge sink_node="349916" src_node="342264" switch_id="5"></edge>
+<edge sink_node="349917" src_node="342265" switch_id="5"></edge>
+<edge sink_node="349918" src_node="342266" switch_id="5"></edge>
+<edge sink_node="336914" src_node="342267" switch_id="5"></edge>
+<edge sink_node="336915" src_node="342268" switch_id="5"></edge>
+<edge sink_node="336916" src_node="342269" switch_id="5"></edge>
+<edge sink_node="336917" src_node="342270" switch_id="5"></edge>
+<edge sink_node="349919" src_node="342271" switch_id="5"></edge>
+<edge sink_node="349920" src_node="342272" switch_id="5"></edge>
+<edge sink_node="349921" src_node="342273" switch_id="5"></edge>
+
+-------------------- Working on 50t
+Short switch id is 5
+1: 422592
+2: 30167
+3: 2653
+4: 80
+5: 3
+7: 4
+8: 1
+58: 2
+SOURCE: 128898
+OPIN: 128898
+CHANY: 1638825
+SINK: 314652
+IPIN: 314652
+CHANX: 408759
+Found 1 nodes
+Found 491372 chanz nodes [491372.00]
+Found 455502
+CHANZ out of CHANX / CHANY [0.24]
+
+-------------------- Working on 100t
+Short switch id is 3
+1 708354
+2 48446
+3 4103
+4 85
+6 1
+7 3
+9 4
+10 1
+74 2
+SOURCE: 242949
+OPIN: 242949
+CHANY: 3031258
+SINK: 598027
+IPIN: 598027
+CHANX: 712112
+Found 1 nodes
+Found 818116 chanz nodes [818116.00]
+Found 760999
+CHANZ out of CHANX / CHANY [0.22]
+
+------------------- Working on 200t
+Short switch id is 3
+1 1618331
+2 111473
+3 10052
+15 1
+16 3
+4 58
+6 6
+20 9
+21 4
+133 2
+SOURCE: 499699
+OPIN: 499699
+CHANY: 6646234
+CHANX: 1579136
+SINK: 1245361
+IPIN: 1245361
+Found 1 nodes
+Found 1872294 chanz nodes [1872294.00]
+Found 1739939
+CHANZ out of CHANX / CHANY [0.23]
+
+
+
